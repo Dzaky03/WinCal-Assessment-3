@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -30,6 +31,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -92,6 +95,7 @@ fun FormDialog(
 ) {
     var formData by remember { mutableStateOf(FormData(title, description)) }
     var titleError by remember { mutableStateOf(false) }
+    var useAutoTitle by remember { mutableStateOf(false) }
 
     // Image state management - clearer state tracking
     var imageState by remember {
@@ -178,7 +182,8 @@ fun FormDialog(
                         ),
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Next,
-                        )
+                        ),
+                        enabled = !useAutoTitle
                     )
                     if (titleError) {
                         Text(
@@ -188,8 +193,53 @@ fun FormDialog(
                             modifier = Modifier.padding(top = 4.dp)
                         )
                     }
-                    Spacer(modifier = Modifier.height(4.dp))
-                    // make a check box and when it's checked, generate title. if unchecked, do nothing
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable {
+                            useAutoTitle = !useAutoTitle
+                            if (useAutoTitle) {
+                                // Generate a new title when checkbox is checked
+                                formData = formData.copy(title = generator.generateTitle())
+                                titleError = false
+                            }
+                        }
+                    ) {
+                        Checkbox(
+                            checked = useAutoTitle,
+                            onCheckedChange = { checked ->
+                                useAutoTitle = checked
+                                if (checked) {
+                                    // Generate a new title when checkbox is checked
+                                    formData = formData.copy(title = generator.generateTitle())
+                                    titleError = false
+                                }
+                            },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = Success,
+                                uncheckedColor = BackgroundDark.copy(alpha = 0.6f),
+                                checkmarkColor = Color.White
+                            )
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Auto-generate title for lazy users",
+                            fontSize = 14.sp,
+                            color = BackgroundDark.copy(alpha = 0.8f),
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+
+                    // Show generated title info
+                    if (useAutoTitle) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "✨ Title automatically generated! Uncheck to edit manually.",
+                            fontSize = 12.sp,
+                            color = Success,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
 
                 // Description Input
@@ -226,7 +276,7 @@ fun FormDialog(
                 // Image Upload Section
                 Column {
                     Text(
-                        text = "Upload Image",
+                        text = "Upload a photo of your drink! (Optional)",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         color = BackgroundDark
