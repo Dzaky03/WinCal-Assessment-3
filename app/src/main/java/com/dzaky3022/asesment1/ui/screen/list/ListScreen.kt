@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.PersonOutline
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -203,7 +204,7 @@ fun ListScreen(
     ) {
         Scaffold(
             topBar = {
-                TopAppBar(
+                CenterAlignedTopAppBar(
                     title = {
                         Box(
                             modifier = Modifier.fillMaxWidth(),
@@ -283,12 +284,13 @@ fun ListScreen(
                                         },
                                         onDelete = { id ->
                                             showDeleteDialog = true to id
-                                        }
-                                    ) {
-                                        // Show detail dialog instead of navigating
-                                        selectedItem = item
-                                        showDetailDialog = true
-                                    }
+                                        },
+                                        onTap = {
+                                            selectedItem = item
+                                            showDetailDialog = true
+                                        },
+                                        isGridLayout = false // List layout
+                                    )
                                 }
                             }
                         }
@@ -309,11 +311,13 @@ fun ListScreen(
                                         },
                                         onDelete = { id ->
                                             showDeleteDialog = true to id
-                                        }
-                                    ) {
-                                        selectedItem = item
-                                        showDetailDialog = true
-                                    }
+                                        },
+                                        onTap = {
+                                            selectedItem = item
+                                            showDetailDialog = true
+                                        },
+                                        isGridLayout = true // Grid layout
+                                    )
                                 }
                             }
                         }
