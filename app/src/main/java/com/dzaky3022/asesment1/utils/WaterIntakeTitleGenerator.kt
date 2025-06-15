@@ -29,35 +29,35 @@ class WaterIntakeTitleGenerator {
     }
 
     // Generate creative phrases/sentences
-    fun generatePhrase(): String {
-        val phrases = listOf(
-            "${timeWords.random().lowercase()} ${drinkWords.random().lowercase()} ${trackingWords.random().lowercase()}",
-            "${drinkWords.random().lowercase()} ${trackingWords.random().lowercase()} for ${timeWords.random().lowercase()}",
-            "${timeWords.random().lowercase()} ${trackingWords.random().lowercase()}",
-            "just ${trackingWords.random().lowercase()} your ${drinkWords.random().lowercase()}",
-            "${drinkWords.random().lowercase()} ${trackingWords.random().lowercase()} ${timeWords.random().lowercase()}",
-            "${timeWords.random().lowercase()} ${drinkWords.random().lowercase()} ${trackingWords.random().lowercase()}",
-            "${trackingWords.random().lowercase()} your ${drinkWords.random().lowercase()}, ${timeWords.random().lowercase()}",
-            "your ${timeWords.random().lowercase()} ${drinkWords.random().lowercase()} ${trackingWords.random().lowercase()}",
-            "${timeWords.random().lowercase()} ${drinkWords.random().lowercase()} ${trackingWords.random().lowercase()}",
-            "${drinkWords.random().lowercase()} ${trackingWords.random().lowercase()} made simple"
-        )
-        return phrases.random()
-    }
+//    fun generatePhrase(): String {
+//        val phrases = listOf(
+//            "${timeWords.random().lowercase()} ${drinkWords.random().lowercase()} ${trackingWords.random().lowercase()}",
+//            "${drinkWords.random().lowercase()} ${trackingWords.random().lowercase()} for ${timeWords.random().lowercase()}",
+//            "${timeWords.random().lowercase()} ${trackingWords.random().lowercase()}",
+//            "just ${trackingWords.random().lowercase()} your ${drinkWords.random().lowercase()}",
+//            "${drinkWords.random().lowercase()} ${trackingWords.random().lowercase()} ${timeWords.random().lowercase()}",
+//            "${timeWords.random().lowercase()} ${drinkWords.random().lowercase()} ${trackingWords.random().lowercase()}",
+//            "${trackingWords.random().lowercase()} your ${drinkWords.random().lowercase()}, ${timeWords.random().lowercase()}",
+//            "your ${timeWords.random().lowercase()} ${drinkWords.random().lowercase()} ${trackingWords.random().lowercase()}",
+//            "${timeWords.random().lowercase()} ${drinkWords.random().lowercase()} ${trackingWords.random().lowercase()}",
+//            "${drinkWords.random().lowercase()} ${trackingWords.random().lowercase()} made simple"
+//        )
+//        return phrases.random()
+//    }
 
     // Generate multiple suggestions
-    fun generateTitleSuggestions(count: Int = 10): List<String> {
-        return (1..count).map { generateTitle() }.distinct()
-    }
+//    fun generateTitleSuggestions(count: Int = 10): List<String> {
+//        return (1..count).map { generateTitle() }.distinct()
+//    }
 
-    fun generatePhraseSuggestions(count: Int = 10): List<String> {
-        return (1..count).map { generatePhrase() }.distinct()
-    }
+//    fun generatePhraseSuggestions(count: Int = 10): List<String> {
+//        return (1..count).map { generatePhrase() }.distinct()
+//    }
 
     // Generate mixed suggestions (titles + phrases)
-    fun generateMixedSuggestions(count: Int = 15): List<String> {
-        val titles = generateTitleSuggestions(count / 2)
-        val phrases = generatePhraseSuggestions(count / 2)
-        return (titles + phrases).shuffled().take(count)
-    }
+//    fun generateMixedSuggestions(count: Int = 15): List<String> {
+//        val titles = generateTitleSuggestions(count / 2)
+//        val phrases = generatePhraseSuggestions(count / 2)
+//        return (titles + phrases).shuffled().take(count)
+//    }
 }

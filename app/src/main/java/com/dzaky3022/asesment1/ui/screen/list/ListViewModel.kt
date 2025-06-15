@@ -75,7 +75,8 @@ class ListViewModel(
     }
 
     fun deleteData(waterResultId: String, context: Context) {
-        _deleteStatus.value = Enums.ResponseStatus.Loading.apply { updateMessage(context.getString(R.string.waiting)) }
+        _deleteStatus.value =
+            Enums.ResponseStatus.Loading.apply { updateMessage(context.getString(R.string.waiting)) }
         viewModelScope.launch(Dispatchers.IO) {
             val response = repository.deleteWaterResult(waterResultId)
             if (response)
@@ -93,23 +94,6 @@ class ListViewModel(
             Enums.ResponseStatus.Loading.apply { updateMessage(context.getString(R.string.waiting)) }
         viewModelScope.launch {
             authUI.signOut(context)
-//            if (dataStore.firstOrNull().isNullOrEmpty())
-//                _logOutStatus.value = Enums.ResponseStatus.Success.apply {
-//                    updateMessage(
-//                        context.getString(
-//                            R.string.logout_success
-//                        )
-//                    )
-//                }
-//            else
-//                _logOutStatus.value = Enums.ResponseStatus.Failed.apply {
-//                    updateMessage(
-//                        context.getString(
-//                            R.string.logout_failed
-//                        )
-//                    )
-//                }
-
         }
     }
 

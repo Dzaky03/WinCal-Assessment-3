@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 class FormViewModel(
     private val waterResultId: String? = null,
     private val repository: WaterResultRepository,
-    private val useFab: Boolean? = false,
+    useFab: Boolean? = false,
 ) : ViewModel() {
 
     private val _isUpdate = MutableStateFlow(false)
