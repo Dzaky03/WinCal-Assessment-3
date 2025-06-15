@@ -48,11 +48,6 @@ interface WaterResultApi {
         @Query("show_all") showAll: Boolean = true,
     ): BaseResponse<List<WaterResultDto>>
 
-    @GET("/water-results/{result_id}")
-    suspend fun getWaterResult(
-        @Path("result_id") resultId: String
-    ): BaseResponse<WaterResultDto>
-
     @Multipart
     @PUT("/water-results/{result_id}")
     suspend fun updateWaterResult(
@@ -130,5 +125,3 @@ object WaterApi {
     val isInitialized: Boolean
         get() = _service != null
 }
-
-enum class ApiStatus { IDLE, LOADING, SUCCESS, FAILED }

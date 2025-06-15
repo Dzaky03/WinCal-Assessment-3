@@ -5,6 +5,4 @@ data class User(
     var nama: String? = null,
     var email: String? = null,
     var photoUrl: String? = null,
-) {
-    constructor() : this(null)
-}
+)

@@ -23,7 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
@@ -126,7 +126,7 @@ fun WaterResultDetailDialog(
                 if (!item.description.isNullOrEmpty()) {
                     DetailSection(
                         title = "Description",
-                        content = item.description!!
+                        content = item.description
                     )
                 }
 
@@ -149,13 +149,13 @@ fun WaterResultDetailDialog(
                         modifier = Modifier.padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        DetailRow("Room Temperature", "${item.roomTemp ?: 0} ${item.tempUnit ?: "°C"}")
-                        DetailRow("Weight", "${item.weight ?: 0} ${item.weightUnit ?: "kg"}")
-                        DetailRow("Activity Level", "${item.activityLevel ?: "Not specified"}")
-                        DetailRow("Drink Amount", "${item.drinkAmount ?: 0} ${item.waterUnit ?: "ml"}")
+                        DetailRow("Room\nTemperature", "${item.roomTemp ?: 0} ${item.tempUnit?.symbol ?: "°C"}")
+                        DetailRow("Weight", "${item.weight ?: 0} ${item.weightUnit?.symbol ?: "kg"}")
+                        DetailRow("Activity\nLevel", "${item.activityLevel ?: "Not specified"}")
+                        DetailRow("Drink\nAmount", "${item.drinkAmount ?: 0} ${item.waterUnit ?: "ml"}")
                         DetailRow("Gender", "${item.gender ?: "Not specified"}")
-                        
-                        Divider(
+
+                        HorizontalDivider(
                             modifier = Modifier.padding(vertical = 8.dp),
                             color = BackgroundDark.copy(alpha = 0.1f)
                         )

@@ -87,7 +87,6 @@ class Enums {
     }
 
     enum class ResponseStatus(var message: String = "") {
-        SuccessOffline,
         Success,
         Failed,
         Idle,

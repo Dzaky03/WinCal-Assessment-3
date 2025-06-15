@@ -1,26 +1,17 @@
 package com.dzaky3022.asesment1.ui.screen.form
 
 import android.content.Context
-import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dzaky3022.asesment1.R
-import com.dzaky3022.asesment1.database.WaterResultDao
 import com.dzaky3022.asesment1.repository.WaterResultRepository
-import com.dzaky3022.asesment1.ui.model.User
 import com.dzaky3022.asesment1.ui.model.WaterResultEntity
 import com.dzaky3022.asesment1.utils.Enums
-import com.dzaky3022.asesment1.utils.Enums.ActivityLevel
-import com.dzaky3022.asesment1.utils.Enums.Gender
-import com.dzaky3022.asesment1.utils.Enums.TempUnit
-import com.dzaky3022.asesment1.utils.Enums.WaterUnit
-import com.dzaky3022.asesment1.utils.Enums.WeightUnit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.threeten.bp.Instant
 
 class FormViewModel(
     private val waterResultId: String? = null,

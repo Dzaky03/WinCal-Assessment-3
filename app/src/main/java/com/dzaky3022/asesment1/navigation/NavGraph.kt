@@ -21,7 +21,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.dzaky3022.asesment1.database.WaterResultDao
 import com.dzaky3022.asesment1.repository.WaterResultRepository
 import com.dzaky3022.asesment1.ui.component.waterdrops.wave.WaterDropText
 import com.dzaky3022.asesment1.ui.component.waterdrops.wave.WaveParams
@@ -35,8 +34,6 @@ import com.dzaky3022.asesment1.ui.theme.Poppins
 import com.dzaky3022.asesment1.ui.theme.Water
 import com.dzaky3022.asesment1.utils.ViewModelFactory
 import com.dzaky3022.asesment1.waveGap
-import com.google.firebase.auth.FirebaseUser
-import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun NavGraph(

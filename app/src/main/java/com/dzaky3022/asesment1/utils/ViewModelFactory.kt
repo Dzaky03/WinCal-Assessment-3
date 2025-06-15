@@ -2,7 +2,6 @@ package com.dzaky3022.asesment1.utils
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.dzaky3022.asesment1.database.WaterResultDao
 import com.dzaky3022.asesment1.repository.WaterResultRepository
 import com.dzaky3022.asesment1.ui.model.User
 import com.dzaky3022.asesment1.ui.model.WaterResultEntity
@@ -11,8 +10,6 @@ import com.dzaky3022.asesment1.ui.screen.form.FormViewModel
 import com.dzaky3022.asesment1.ui.screen.list.ListViewModel
 import com.dzaky3022.asesment1.ui.screen.visual.VisualViewModel
 import com.firebase.ui.auth.AuthUI
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.flow.StateFlow
 
 class ViewModelFactory(
     private val waterResultId: String? = null,

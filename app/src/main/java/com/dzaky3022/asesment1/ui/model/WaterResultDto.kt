@@ -1,6 +1,5 @@
 package com.dzaky3022.asesment1.ui.model
 
-import android.net.Uri
 import com.dzaky3022.asesment1.utils.Enums
 import com.squareup.moshi.JsonClass
 import org.threeten.bp.Instant
@@ -25,24 +24,6 @@ data class WaterResultDto(
     val imageUrl: String? = null,
     val createdAt: String? = null,
     val updatedAt: String? = null
-) : WaterResult
-
-@JsonClass(generateAdapter = true)
-data class WaterResultForm(
-    override val uid: String? = null,
-    override val title: String? = null,
-    override val description: String? = null,
-    override val roomTemp: Double? = null,
-    override val tempUnit: Enums.TempUnit? = null,
-    override val weight: Double? = null,
-    override val weightUnit: Enums.WeightUnit? = null,
-    override val activityLevel: Enums.ActivityLevel? = null,
-    override val drinkAmount: Double? = null,
-    override val waterUnit: Enums.WaterUnit? = null,
-    override val resultValue: Double? = null,
-    override val percentage: Double? = null,
-    override val gender: Enums.Gender? = null,
-    val imageUri: Uri? = null,
 ) : WaterResult
 
 fun WaterResultDto.toEntity(): WaterResultEntity {

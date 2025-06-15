@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class VisualViewModel(
-    private val selectedWaterResult: WaterResultEntity,
+    selectedWaterResult: WaterResultEntity,
 ) : ViewModel() {
 
     private val _waterResult = MutableStateFlow<WaterResultEntity?>(null)

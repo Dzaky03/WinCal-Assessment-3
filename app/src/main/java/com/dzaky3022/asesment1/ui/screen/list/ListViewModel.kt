@@ -11,14 +11,13 @@ import com.dzaky3022.asesment1.ui.model.WaterResultEntity
 import com.dzaky3022.asesment1.utils.DataStore
 import com.dzaky3022.asesment1.utils.Enums
 import com.firebase.ui.auth.AuthUI
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class ListViewModel(
-    private val localUser: User,
+    localUser: User,
     private val authUI: AuthUI,
     private val repository: WaterResultRepository,
     private val dataStore: DataStore,
@@ -94,7 +93,6 @@ class ListViewModel(
             Enums.ResponseStatus.Loading.apply { updateMessage(context.getString(R.string.waiting)) }
         viewModelScope.launch {
             authUI.signOut(context)
-            dataStore.clearUser()
 //            if (dataStore.firstOrNull().isNullOrEmpty())
 //                _logOutStatus.value = Enums.ResponseStatus.Success.apply {
 //                    updateMessage(

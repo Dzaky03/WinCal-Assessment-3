@@ -1,17 +1,17 @@
 package com.dzaky3022.asesment1.repository
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.util.Log
 import com.dzaky3022.asesment1.database.WaterResultDao
 import com.dzaky3022.asesment1.network.WaterResultApi
 import com.dzaky3022.asesment1.ui.model.WaterResultEntity
 import com.dzaky3022.asesment1.ui.model.toEntity
-import com.dzaky3022.asesment1.utils.Enums.*
+import com.dzaky3022.asesment1.utils.Enums.ActivityLevel
+import com.dzaky3022.asesment1.utils.Enums.Gender
+import com.dzaky3022.asesment1.utils.Enums.TempUnit
+import com.dzaky3022.asesment1.utils.Enums.WaterUnit
+import com.dzaky3022.asesment1.utils.Enums.WeightUnit
 import kotlinx.coroutines.flow.Flow
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -19,9 +19,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.threeten.bp.Instant
 import org.threeten.bp.OffsetDateTime
-import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
 
 class WaterResultRepository(
     private val dao: WaterResultDao,
@@ -41,6 +39,30 @@ class WaterResultRepository(
     suspend fun clearUserData(): Int =
         dao.deleteAllByUser(uid)
 
+    private var lastSyncCount = 0
+
+    suspend fun hasPendingSyncItems(): Boolean {
+        return try {
+            val unsyncedResults = dao.getUnsyncedResults()
+            val unsyncedUpdates = dao.getUnsyncedUpdates()
+            val unsyncedDeletes = dao.getUnsyncedDeletes()
+
+            val totalPending = unsyncedResults.size + unsyncedUpdates.size + unsyncedDeletes.size
+            Log.d(
+                "Repository",
+                "Pending sync items: $totalPending (${unsyncedResults.size} new, ${unsyncedUpdates.size} updates, ${unsyncedDeletes.size} deletes)"
+            )
+
+            totalPending > 0
+        } catch (e: Exception) {
+            Log.e("Repository", "Error checking pending sync items: ${e.message}", e)
+            false
+        }
+    }
+
+    fun getLastSyncCount(): Int = lastSyncCount
+
+
     suspend fun refreshFromNetwork() {
         try {
             // Step 1: Always sync pending local changes first
@@ -50,7 +72,10 @@ class WaterResultRepository(
             }
 
             if (pendingLocalItems.isNotEmpty()) {
-                Log.d("Repository", "Found ${pendingLocalItems.size} items that need syncing, syncing first...")
+                Log.d(
+                    "Repository",
+                    "Found ${pendingLocalItems.size} items that need syncing, syncing first..."
+                )
                 val syncedCount = syncPendingResults()
                 Log.d("Repository", "Synced $syncedCount items before fetching server data")
             }
@@ -76,7 +101,10 @@ class WaterResultRepository(
                     } else if (!existingLocal.needsSync && !existingLocal.needsUpdate && !existingLocal.needsDelete) {
                         // Local item is fully synced - update with server data (server is source of truth)
                         dao.insert(networkEntity.copy(isSync = true, needsSync = false))
-                        Log.d("Repository", "Updated synced item with server data: ${networkEntity.id}")
+                        Log.d(
+                            "Repository",
+                            "Updated synced item with server data: ${networkEntity.id}"
+                        )
                     } else {
                         // Local item still has pending changes - keep local version
                         Log.d("Repository", "Keeping local changes for item: ${networkEntity.id}")
@@ -91,11 +119,17 @@ class WaterResultRepository(
                 }
 
                 if (localOnlyItems.isNotEmpty()) {
-                    Log.d("Repository", "Found ${localOnlyItems.size} items that exist locally but not on server")
+                    Log.d(
+                        "Repository",
+                        "Found ${localOnlyItems.size} items that exist locally but not on server"
+                    )
                     localOnlyItems.forEach { localItem ->
                         // Item was deleted on server - remove from local database
                         dao.delete(localItem)
-                        Log.d("Repository", "Removed item that was deleted on server: ${localItem.id}")
+                        Log.d(
+                            "Repository",
+                            "Removed item that was deleted on server: ${localItem.id}"
+                        )
 
                         // Clean up local image file if exists
                         localItem.localImagePath?.let { path ->
@@ -109,7 +143,10 @@ class WaterResultRepository(
                     }
                 }
 
-                Log.d("Repository", "Successfully refreshed from network with ${networkEntities.size} items")
+                Log.d(
+                    "Repository",
+                    "Successfully refreshed from network with ${networkEntities.size} items"
+                )
             } else {
                 Log.w("Repository", "Server response was not successful")
             }
@@ -219,6 +256,7 @@ class WaterResultRepository(
 
     private suspend fun syncPendingResults(): Int {
         var syncedCount = 0
+        lastSyncCount = 0
 
         try {
             // Sync new items (CREATE)
@@ -247,16 +285,15 @@ class WaterResultRepository(
                             ?: Gender.Male.jsonValue).toStrRequestBody(),
                         // Updated: Use localImagePath directly instead of URI
                         image = if (entity.localImagePath.isNullOrEmpty()) null else createProperImagePart(
-                            context,
                             entity.localImagePath!!
                         )
                     )
 
                     if (response.success && response.data != null) {
                         val odt =
-                            OffsetDateTime.parse(if (response.data.createdAt!!.endsWith('Z')) response.data.createdAt!! else response.data.createdAt!! + "Z")
+                            OffsetDateTime.parse(if (response.data.createdAt!!.endsWith('Z')) response.data.createdAt else response.data.createdAt + "Z")
                         val odtUpdated =
-                            OffsetDateTime.parse(if (response.data.updatedAt!!.endsWith('Z')) response.data.updatedAt!! else response.data.updatedAt!! + "Z")
+                            OffsetDateTime.parse(if (response.data.updatedAt!!.endsWith('Z')) response.data.updatedAt else response.data.updatedAt + "Z")
                         val createdAt: Instant = odt.toInstant()
                         val updatedAt: Instant = odtUpdated.toInstant()
 
@@ -319,16 +356,16 @@ class WaterResultRepository(
                         percentage = (entity.percentage ?: 0.0).toNumRequestBody(),
                         gender = (entity.gender?.jsonValue
                             ?: Gender.Male.jsonValue).toStrRequestBody(),
-                        deleteImage = entity.deleteImage.toString().toStrRequestBody(), // Add this line
+                        deleteImage = entity.deleteImage.toString()
+                            .toStrRequestBody(), // Add this line
                         image = if (entity.localImagePath.isNullOrEmpty()) null else createProperImagePart(
-                            context,
                             entity.localImagePath!!
                         )
                     )
 
                     if (response.success && response.data != null) {
                         val odtUpdated =
-                            OffsetDateTime.parse(if (response.data.updatedAt!!.endsWith('Z')) response.data.updatedAt!! else response.data.updatedAt!! + "Z")
+                            OffsetDateTime.parse(if (response.data.updatedAt!!.endsWith('Z')) response.data.updatedAt else response.data.updatedAt + "Z")
                         val updatedAt: Instant = odtUpdated.toInstant()
 
                         val syncedEntity = entity.copy(
@@ -410,6 +447,7 @@ class WaterResultRepository(
                 }
             }
 
+            lastSyncCount = syncedCount
             Log.d("Repository", "Sync completed. Total synced items: $syncedCount")
 
         } catch (e: Exception) {
@@ -432,7 +470,6 @@ class WaterResultRepository(
 
     // Proper image creation function
     private fun createProperImagePart(
-        context: Context,
         localImagePath: String
     ): MultipartBody.Part? {
         return try {
