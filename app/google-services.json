@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "714415586722",
+    "project_id": "wincal",
+    "storage_bucket": "wincal.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:714415586722:android:1feefc77dac316f4b806fb",
+        "android_client_info": {
+          "package_name": "com.dzaky3022.asesment1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "714415586722-ngummaaha05ra6c0i3bsn13f5rhmep27.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dzaky3022.asesment1",
+            "certificate_hash": "13a11be8d93bf44ce6902a3917092be744bc916f"
+          }
+        },
+        {
+          "client_id": "714415586722-d4eebhtrk4kmg5rb382943vlsvlq4h8k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhPFueZdZvwfCuPePRy8jz2gDCnS_r5vU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "714415586722-d4eebhtrk4kmg5rb382943vlsvlq4h8k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
