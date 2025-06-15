@@ -202,15 +202,10 @@ fun ListScreen(
             topBar = {
                 CenterAlignedTopAppBar(
                     title = {
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                text = stringResource(R.string.list_calculation_results),
-                                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                            )
-                        }
+                        Text(
+                            text = stringResource(R.string.list_calculation_results),
+                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                        )
                     },
                     actions = {
                         IconButton(

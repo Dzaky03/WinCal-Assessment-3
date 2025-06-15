@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Close
@@ -52,6 +53,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -62,6 +64,7 @@ import com.dzaky3022.asesment1.ui.theme.BackgroundLight
 import com.dzaky3022.asesment1.ui.theme.Danger
 import com.dzaky3022.asesment1.ui.theme.Success
 import com.dzaky3022.asesment1.ui.theme.Warning
+import com.dzaky3022.asesment1.utils.WaterIntakeTitleGenerator
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -83,6 +86,7 @@ fun FormDialog(
     imageUrl: String = "", // Remote image URL from API
     localImagePath: String = "", // Local image path for unsynced data
     deleteImage: Boolean = false, // Add this parameter to track deletion state
+    generator: WaterIntakeTitleGenerator,
     onDismissRequest: () -> Unit,
     onConfirmation: (FormData) -> Unit
 ) {
@@ -171,6 +175,9 @@ fun FormDialog(
                             unfocusedBorderColor = if (titleError) Danger else BackgroundDark.copy(
                                 alpha = 0.3f
                             )
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next,
                         )
                     )
                     if (titleError) {
@@ -181,12 +188,14 @@ fun FormDialog(
                             modifier = Modifier.padding(top = 4.dp)
                         )
                     }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    // make a check box and when it's checked, generate title. if unchecked, do nothing
                 }
 
                 // Description Input
                 Column {
                     Text(
-                        text = "Description",
+                        text = "Description (Optional)",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         color = BackgroundDark
@@ -207,7 +216,10 @@ fun FormDialog(
                                 alpha = 0.3f
                             )
                         ),
-                        maxLines = 4
+                        maxLines = 4,
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done,
+                        )
                     )
                 }
 

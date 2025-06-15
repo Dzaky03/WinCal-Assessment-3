@@ -82,6 +82,7 @@ import com.dzaky3022.asesment1.utils.Enums.Gender
 import com.dzaky3022.asesment1.utils.Enums.TempUnit
 import com.dzaky3022.asesment1.utils.Enums.WaterUnit
 import com.dzaky3022.asesment1.utils.Enums.WeightUnit
+import com.dzaky3022.asesment1.utils.WaterIntakeTitleGenerator
 import com.dzaky3022.asesment1.utils.roundUpTwoDecimals
 import com.firebase.ui.auth.AuthUI
 import java.util.UUID
@@ -93,6 +94,7 @@ fun FormScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     formViewModel: FormViewModel,
+    generator: WaterIntakeTitleGenerator,
     onNavigate: (WaterResultEntity) -> Unit,
 ) {
     val context = LocalContext.current
@@ -140,6 +142,7 @@ fun FormScreen(
             localImagePath = data?.localImagePath ?: "",
             deleteImage = data?.deleteImage ?: false,
             isLoading = insertStatus == Enums.ResponseStatus.Loading || updateStatus == Enums.ResponseStatus.Loading,
+            generator = generator,
             onDismissRequest = { showDialog = false },
             onConfirmation = { formData ->
                 resultValue = calculateWaterIntake(
@@ -249,7 +252,7 @@ fun FormScreen(
 
     LaunchedEffect(insertStatus) {
         if (insertStatus != Enums.ResponseStatus.Idle) {
-            Toast.makeText(context, insertStatus.message, Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context, insertStatus.message, Toast.LENGTH_SHORT).show()
             if (insertStatus == Enums.ResponseStatus.Success) {
                 navController.navigate(Screen.Visual.route)
                 showDialog = false
@@ -260,7 +263,7 @@ fun FormScreen(
 
     LaunchedEffect(updateStatus) {
         if (updateStatus != Enums.ResponseStatus.Idle) {
-            Toast.makeText(context, updateStatus.message, Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context, updateStatus.message, Toast.LENGTH_SHORT).show()
             if (updateStatus == Enums.ResponseStatus.Success) {
                 navController.navigate(Screen.Visual.route)
                 showDialog = false

@@ -242,6 +242,7 @@ private fun ListWaterResultItem(
                     .clip(RoundedCornerShape(12.dp))
             ) {
                 val imageSource = when {
+                    item.deleteImage -> null
                     !item.localImagePath.isNullOrEmpty() -> "file://${item.localImagePath}"
                     !item.imageUrl.isNullOrEmpty() -> item.imageUrl
                     else -> null

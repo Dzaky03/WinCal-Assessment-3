@@ -38,7 +38,7 @@ class SyncWorker(
             // Set initial syncing status
             setProgressAsync(workDataOf(
                 KEY_SYNC_STATUS to STATUS_SYNCING,
-                KEY_SYNC_MESSAGE to "Checking authentication..."
+                KEY_SYNC_MESSAGE to "Starting sync..."
             ))
 
             // Check if user is authenticated
@@ -47,7 +47,8 @@ class SyncWorker(
                 Log.d(TAG, "No authenticated user, skipping sync")
                 return Result.success(workDataOf(
                     KEY_SYNC_STATUS to STATUS_SUCCESS,
-                    KEY_SYNC_MESSAGE to "No user authenticated"
+                    KEY_SYNC_MESSAGE to "No user authenticated",
+                    KEY_SYNCED_COUNT to 0
                 ))
             }
 
@@ -66,7 +67,7 @@ class SyncWorker(
             // Update progress
             setProgressAsync(workDataOf(
                 KEY_SYNC_STATUS to STATUS_SYNCING,
-                KEY_SYNC_MESSAGE to "Initializing sync..."
+                KEY_SYNC_MESSAGE to "Initializing API..."
             ))
 
             // Initialize API if not already done
@@ -74,6 +75,12 @@ class SyncWorker(
                 WaterApi.initialize(currentUser.uid)
                 Log.d(TAG, "WaterApi initialized for user: ${currentUser.uid}")
             }
+
+            // Update progress
+            setProgressAsync(workDataOf(
+                KEY_SYNC_STATUS to STATUS_SYNCING,
+                KEY_SYNC_MESSAGE to "Checking for pending items..."
+            ))
 
             // Get repository
             val database = AppDatabase.getAppDb(applicationContext)
@@ -87,15 +94,7 @@ class SyncWorker(
             // Check if there are pending sync items
             val hasPendingItems = repository.hasPendingSyncItems()
 
-            if (!hasPendingItems) {
-                Log.d(TAG, "No pending sync items found")
-                return Result.success(workDataOf(
-                    KEY_SYNC_STATUS to STATUS_SUCCESS,
-                    KEY_SYNC_MESSAGE to "All data is up to date",
-                    KEY_SYNCED_COUNT to 0
-                ))
-            }
-
+            // Always try to refresh from network to check for new data
             // Update progress
             setProgressAsync(workDataOf(
                 KEY_SYNC_STATUS to STATUS_SYNCING,
@@ -109,13 +108,24 @@ class SyncWorker(
             // Get final sync count (this would need to be implemented in repository)
             val syncedCount = repository.getLastSyncCount()
 
-            Log.d(TAG, "Sync work completed successfully, synced: $syncedCount items")
+            Log.d(TAG, "Sync work completed successfully, synced: $syncedCount items, had pending: $hasPendingItems")
 
-            Result.success(workDataOf(
-                KEY_SYNC_STATUS to STATUS_SUCCESS,
-                KEY_SYNC_MESSAGE to if (syncedCount > 0) "Synced $syncedCount items successfully" else "All data is up to date",
-                KEY_SYNCED_COUNT to syncedCount
-            ))
+            // Only return success message if there was actually something to sync
+            if (syncedCount > 0 || hasPendingItems) {
+                Result.success(workDataOf(
+                    KEY_SYNC_STATUS to STATUS_SUCCESS,
+                    KEY_SYNC_MESSAGE to if (syncedCount > 0) "Synced $syncedCount items successfully" else "Sync completed",
+                    KEY_SYNCED_COUNT to syncedCount
+                ))
+            } else {
+                // Silent success - no snackbar needed for routine checks
+                Log.d(TAG, "Routine sync check - no changes needed")
+                Result.success(workDataOf(
+                    KEY_SYNC_STATUS to STATUS_SUCCESS,
+                    KEY_SYNC_MESSAGE to "", // Empty message = no snackbar
+                    KEY_SYNCED_COUNT to 0
+                ))
+            }
 
         } catch (e: Exception) {
             Log.e(TAG, "Sync work failed: ${e.message}", e)

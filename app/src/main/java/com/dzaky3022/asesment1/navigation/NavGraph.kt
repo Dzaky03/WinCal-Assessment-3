@@ -33,6 +33,7 @@ import com.dzaky3022.asesment1.ui.screen.visual.VisualScreen
 import com.dzaky3022.asesment1.ui.theme.Poppins
 import com.dzaky3022.asesment1.ui.theme.Water
 import com.dzaky3022.asesment1.utils.ViewModelFactory
+import com.dzaky3022.asesment1.utils.WaterIntakeTitleGenerator
 import com.dzaky3022.asesment1.waveGap
 
 @Composable
@@ -41,6 +42,7 @@ fun NavGraph(
     listViewModel: ListViewModel,
     repository: WaterResultRepository,
     localUser: User?,
+    generator: WaterIntakeTitleGenerator,
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val points = remember { screenWidth / waveGap }
@@ -80,6 +82,7 @@ fun NavGraph(
                         useFab = useFab,
                     )
                 ),
+                generator = generator,
                 onNavigate = { data ->
                     selectedData = data
                 }

@@ -3,6 +3,8 @@ package com.dzaky3022.asesment1.utils
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.Density
@@ -120,4 +122,13 @@ fun formatDate(instant: Instant, locale: Locale): String {
     val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy", locale)
         .withZone(ZoneId.systemDefault())
     return formatter.format(instant)
+}
+
+fun hasInternetConnection(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+        ?: return false
+
+    val network = connectivityManager.activeNetwork ?: return false
+    val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+    return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
 }

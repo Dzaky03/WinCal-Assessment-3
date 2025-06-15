@@ -53,6 +53,7 @@ import com.dzaky3022.asesment1.ui.theme.WhiteTitle
 import com.dzaky3022.asesment1.ui.theme.WinCalTheme
 import com.dzaky3022.asesment1.utils.DataStore
 import com.dzaky3022.asesment1.utils.ViewModelFactory
+import com.dzaky3022.asesment1.utils.WaterIntakeTitleGenerator
 import com.firebase.ui.auth.AuthUI
 import kotlinx.coroutines.delay
 
@@ -71,7 +72,7 @@ class MainActivity : ComponentActivity() {
         val dataStore = DataStore(this.applicationContext)
         val roomDb = AppDatabase.getAppDb(this.applicationContext)
         val firebaseAuthUi = AuthUI.getInstance()
-
+        val generator = WaterIntakeTitleGenerator()
         setContent {
             WinCalTheme {
                 val viewModel: AppViewModel = viewModel()
@@ -197,7 +198,7 @@ class MainActivity : ComponentActivity() {
                                     // Add sync status snackbar monitoring
                                     SyncStatusSnackbar(
                                         syncManager = syncManager,
-                                        snackbarHostState = snackbarHostState
+//                                        snackbarHostState = snackbarHostState
                                     )
 
                                     val factory = remember(user.uid) {
@@ -214,6 +215,7 @@ class MainActivity : ComponentActivity() {
                                         listViewModel = viewModel(factory = factory, key = user.uid),
                                         repository = repository,
                                         localUser = localUser,
+                                        generator = generator,
                                     )
                                 }
                             }

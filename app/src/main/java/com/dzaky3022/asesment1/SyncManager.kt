@@ -67,13 +67,12 @@ class SyncManager(
     private fun startPeriodicSync() {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
-            .setRequiresBatteryNotLow(false)
+            .setRequiresBatteryNotLow(true)
             .setRequiresStorageNotLow(false)
             .build()
 
         val periodicWorkRequest = PeriodicWorkRequestBuilder<SyncWorker>(
-            15, TimeUnit.SECONDS,
-            15, TimeUnit.SECONDS
+            1, TimeUnit.MINUTES,
         )
             .setConstraints(constraints)
             .setBackoffCriteria(

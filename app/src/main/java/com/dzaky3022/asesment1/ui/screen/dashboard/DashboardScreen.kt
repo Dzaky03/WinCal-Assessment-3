@@ -52,6 +52,7 @@ import com.dzaky3022.asesment1.ui.theme.Water
 import com.dzaky3022.asesment1.ui.theme.WhiteCaption
 import com.dzaky3022.asesment1.ui.theme.WhiteTitle
 import com.dzaky3022.asesment1.utils.Enums.ResponseStatus
+import com.dzaky3022.asesment1.utils.hasInternetConnection
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 
@@ -146,38 +147,42 @@ fun DashboardScreen(
                     blendMode = BlendMode.SrcIn
                 )
             )
-            Button (
-                    modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp),
-            onClick = {
-                authUI.signOut(context).addOnCompleteListener {
-                    launcher.launch(dashboardViewModel.signIn())
-                }
-            },
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = if (isPressed) Color.White else Water,
-                disabledContainerColor = IconBackgroundGray
-            ),
-            interactionSource = interactionSource,
-            ) {
-            Row(
+            Button(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                shape = RoundedCornerShape(8.dp),
+                onClick = {
+                    if (hasInternetConnection(context))
+                        authUI.signOut(context).addOnCompleteListener {
+                            launcher.launch(dashboardViewModel.signIn())
+                        }
+                    else
+                        Toast.makeText(context, "Internet is not available.", Toast.LENGTH_SHORT)
+                            .show()
+                },
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = if (isPressed) Color.White else Water,
+                    disabledContainerColor = IconBackgroundGray
+                ),
+                interactionSource = interactionSource,
             ) {
-                Text(
-                    text = stringResource(R.string.login_with_google),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Spacer(Modifier.width(10.dp))
-                Image(
-                    modifier = Modifier.size(20.dp),
-                    painter = painterResource(R.drawable.google__g__logo),
-                    contentDescription = stringResource(R.string.google_logo),
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.login_with_google),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    Spacer(Modifier.width(10.dp))
+                    Image(
+                        modifier = Modifier.size(20.dp),
+                        painter = painterResource(R.drawable.google__g__logo),
+                        contentDescription = stringResource(R.string.google_logo),
+                    )
+                }
             }
-        }
         }
     }
 }

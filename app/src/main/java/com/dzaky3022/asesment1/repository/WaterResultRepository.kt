@@ -2,6 +2,7 @@ package com.dzaky3022.asesment1.repository
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import com.dzaky3022.asesment1.database.WaterResultDao
 import com.dzaky3022.asesment1.network.WaterResultApi
 import com.dzaky3022.asesment1.ui.model.WaterResultEntity
@@ -41,6 +42,18 @@ class WaterResultRepository(
 
     private var lastSyncCount = 0
 
+    // Helper function to show toast on main thread
+    private fun showToast(message: String, duration: Int = Toast.LENGTH_SHORT) {
+        try {
+            // Post to main thread to ensure toast is shown properly
+            android.os.Handler(android.os.Looper.getMainLooper()).post {
+                Toast.makeText(context, message, duration).show()
+            }
+        } catch (e: Exception) {
+            Log.e("Repository", "Failed to show toast: ${e.message}")
+        }
+    }
+
     suspend fun hasPendingSyncItems(): Boolean {
         return try {
             val unsyncedResults = dao.getUnsyncedResults()
@@ -62,8 +75,8 @@ class WaterResultRepository(
 
     fun getLastSyncCount(): Int = lastSyncCount
 
-
     suspend fun refreshFromNetwork() {
+        var syncRunning = false
         try {
             // Step 1: Always sync pending local changes first
             val localEntities = this.getAllByUserSync() + dao.getUnsyncedDeletes()
@@ -72,6 +85,9 @@ class WaterResultRepository(
             }
 
             if (pendingLocalItems.isNotEmpty()) {
+                syncRunning = true
+                showToast("Syncing ${pendingLocalItems.size} items...")
+
                 Log.d(
                     "Repository",
                     "Found ${pendingLocalItems.size} items that need syncing, syncing first..."
@@ -147,11 +163,22 @@ class WaterResultRepository(
                     "Repository",
                     "Successfully refreshed from network with ${networkEntities.size} items"
                 )
+
+                // Show success toast only if sync was running
+                if (syncRunning) {
+                    showToast("Data synced successfully!", Toast.LENGTH_SHORT)
+                }
             } else {
                 Log.w("Repository", "Server response was not successful")
+                if (syncRunning) {
+                    showToast("Sync failed: Server error", Toast.LENGTH_LONG)
+                }
             }
         } catch (e: Exception) {
             Log.e("Repository", "Error refreshing from network: ${e.message}", e)
+            if (syncRunning) {
+                showToast("Sync failed: ${e.message?.take(50) ?: "Unknown error"}", Toast.LENGTH_LONG)
+            }
             // Don't rethrow - just log and continue with local data
         }
     }
@@ -168,8 +195,18 @@ class WaterResultRepository(
 
         val isOffline = dao.insert(entity) != null
 
-        // Try to sync immediately
-        val isOnline = syncPendingResults() > 0
+        // Try to sync immediately with toast notification
+        val isOnline = try {
+            showToast("Creating and syncing...")
+            val syncCount = syncPendingResults()
+            if (syncCount > 0) {
+                showToast("Item created and synced!", Toast.LENGTH_SHORT)
+            }
+            syncCount > 0
+        } catch (e: Exception) {
+            showToast("Item saved locally, will sync later", Toast.LENGTH_SHORT)
+            false
+        }
 
         return isOnline || isOffline
     }
@@ -219,8 +256,18 @@ class WaterResultRepository(
 
         val isOffline = dao.update(updated) > 0
 
-        // Try to sync immediately
-        val isOnline = syncPendingResults() > 0
+        // Try to sync immediately with toast notification
+        val isOnline = try {
+            showToast("Updating and syncing...")
+            val syncCount = syncPendingResults()
+            if (syncCount > 0) {
+                showToast("Item updated and synced!", Toast.LENGTH_SHORT)
+            }
+            syncCount > 0
+        } catch (e: Exception) {
+            showToast("Item updated locally, will sync later", Toast.LENGTH_SHORT)
+            false
+        }
 
         return isOnline || isOffline
     }
@@ -230,7 +277,11 @@ class WaterResultRepository(
 
         if (existing.needsSync) {
             // Item was never synced to server, safe to delete locally
-            return dao.delete(existing) > 0
+            val deleted = dao.delete(existing) > 0
+            if (deleted) {
+                showToast("Item deleted", Toast.LENGTH_SHORT)
+            }
+            return deleted
         } else {
             // Item exists on server, mark for deletion
             val markedForDeletion = existing.copy(
@@ -240,12 +291,17 @@ class WaterResultRepository(
             )
             dao.update(markedForDeletion)
 
-            // Try to sync deletion immediately, but don't depend on it for the return value
+            // Try to sync deletion immediately
             try {
+                showToast("Deleting and syncing...")
                 val syncResult = syncPendingResults()
                 Log.d("Repository", "Immediate sync attempt: $syncResult items synced")
+                if (syncResult > 0) {
+                    showToast("Item deleted and synced!", Toast.LENGTH_SHORT)
+                }
             } catch (e: Exception) {
                 Log.w("Repository", "Immediate sync failed, will retry later: ${e.message}")
+                showToast("Item marked for deletion, will sync later", Toast.LENGTH_SHORT)
             }
 
             // Return true because we successfully marked for deletion
